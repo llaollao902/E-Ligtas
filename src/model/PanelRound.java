@@ -8,7 +8,7 @@
  * @author Windows
  */
 
-package project; 
+package model; 
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -129,4 +129,5 @@ public class PanelRound extends JPanel {
         area.add(new Area(new Rectangle2D.Double(0, 0, width, height - roundY / 2)));
         return area;
     }
+
 }

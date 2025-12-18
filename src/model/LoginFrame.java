@@ -1,183 +1,209 @@
 package model;
 
-import javax.swing.JOptionPane;
-import javax.swing.GroupLayout;
-import static javax.swing.GroupLayout.Alignment.*;
-import static javax.swing.LayoutStyle.ComponentPlacement.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class LoginFrame extends javax.swing.JFrame {
+public class LoginFrame extends JFrame {
+
+    // user management
+    private UserManager userManager;
+
+    // swing components
+    private JLabel loginLabel;
+    private JLabel signUpLabelButton;
+    private JLabel titleLabel;
+    private JLabel passwordLabel;
+    private JLabel usernameLabel;
+    private JLabel signUpTextLabel;
+
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+
+    // panels for layout
+    private JPanel leftPanel;
+    private JPanel rightPanel;
+
+    // panels acting as buttons
+    private JPanel loginButtonPanel;
+    private JPanel signUpButtonPanel;
+
+    // combined sign-up panel (label + button)
+    private JPanel signUpPanel;
 
     public LoginFrame() {
-        initComponents();
-        setupActions();
-        setupLeftPanelLayout();
-        setupLayeredPaneLayout();
-        setupMainLayout();
+        userManager = new UserManager(); // initialize user manager
+        initComponents(); // initialize swing components
+        setupActions(); // set up mouse listeners
+        setupLayout(); // arrange components on the frame
     }
 
+    // initialize components
     private void initComponents() {
-        // --- Component Declaration ---
-        leftPanel = new javax.swing.JPanel();
-        layeredPane = new javax.swing.JLayeredPane();
-        titleLabel = new javax.swing.JLabel();
-        usernameField = new javax.swing.JTextField();
-        passwordField = new javax.swing.JPasswordField();
-        passwordLabel = new javax.swing.JLabel();
-        usernameLabel = new javax.swing.JLabel();
-        rememberMeRadio = new javax.swing.JRadioButton();
-        loginButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        // labels
+        titleLabel = new JLabel("LOGIN", SwingConstants.CENTER);
+        usernameLabel = new JLabel("Username");
+        passwordLabel = new JLabel("Password");
+        signUpTextLabel = new JLabel("Don't have an account?");
+        loginLabel = new JLabel("Login", SwingConstants.CENTER);
+        signUpLabelButton = new JLabel("Sign Up");
 
-        // --- Panel 1 (Left) ---
-        leftPanel.setBackground(new java.awt.Color(37, 82, 103));
+        // text fields
+        usernameField = new JTextField();
+        passwordField = new JPasswordField();
 
-        // --- Layered Pane (Login Form) ---
-        layeredPane.setBackground(new java.awt.Color(255, 255, 255));
-        layeredPane.setOpaque(true);
+        // fonts
+        Font labelFont = new Font("Century Gothic", Font.PLAIN, 14);
+        Font buttonFont = new Font("Century Gothic", Font.PLAIN, 14);
+        Font smallButtonFont = new Font("Century Gothic", Font.PLAIN, 12);
+        Font titleFont = new Font("Century Gothic", Font.BOLD, 36);
 
-        titleLabel.setFont(new java.awt.Font("SansSerif", 1, 36));
-        titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        titleLabel.setText("LOGIN");
+        // apply fonts
+        titleLabel.setFont(titleFont);
+        usernameLabel.setFont(labelFont);
+        passwordLabel.setFont(labelFont);
+        signUpTextLabel.setFont(new Font("Century Gothic", Font.PLAIN, 12));
+        loginLabel.setFont(buttonFont);
+        signUpLabelButton.setFont(smallButtonFont);
+        usernameField.setFont(labelFont);
+        passwordField.setFont(labelFont);
 
-        passwordLabel.setText("Password");
-        usernameLabel.setText("Username");
+        // login button as panel
+        loginButtonPanel = new JPanel(new BorderLayout());
+        loginButtonPanel.setBackground(new Color(240, 240, 240));
+        loginButtonPanel.setPreferredSize(new Dimension(90, 30));
+        loginButtonPanel.setMaximumSize(new Dimension(90, 30));
+        loginButtonPanel.add(loginLabel, BorderLayout.CENTER);
 
-        rememberMeRadio.setText("Remember Me");
+        // sign-up button panel
+        signUpButtonPanel = new JPanel(new BorderLayout());
+        signUpButtonPanel.setOpaque(false);
+        signUpButtonPanel.setPreferredSize(new Dimension(60, 20));
+        signUpButtonPanel.add(signUpLabelButton, BorderLayout.CENTER);
+        signUpButtonPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        loginButton.setText("Login");
+        // combined sign-up panel
+        signUpPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+        signUpPanel.setOpaque(false);
+        signUpPanel.add(signUpTextLabel);
+        signUpPanel.add(signUpButtonPanel);
+
+        // panels
+        leftPanel = new JPanel();
+        leftPanel.setBackground(new Color(37, 82, 103));
+        leftPanel.setPreferredSize(new Dimension(335, 540));
+
+        rightPanel = new JPanel(new BorderLayout());
+        rightPanel.setBackground(new Color(218, 230, 235));
+        rightPanel.setPreferredSize(new Dimension(625, 540));
     }
 
- 
-    // Action Handlers
+    // set up mouse actions
     private void setupActions() {
-        loginButton.addActionListener(e -> loginAction());
-        rememberMeRadio.addActionListener(e -> rememberMeAction());
+
+        // login click
+        loginButtonPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                loginAction();
+            }
+        });
+
+        // signup click
+        signUpButtonPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                signUpAction();
+            }
+        });
+
+        // pressing enter triggers login
         usernameField.addActionListener(e -> loginAction());
         passwordField.addActionListener(e -> loginAction());
     }
 
+    // login
     private void loginAction() {
-        String username = usernameField.getText();
-        String password = passwordField.getText();
+        String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword());
 
-        if ("admin".equals(username) && ("admin".equals(password) || "1234".equals(password))) {
-            // Open Dashboard
+        if (userManager.login(username, password)) {
+            JOptionPane.showMessageDialog(this, "Login successful!");
             Dashboard dashboard = new Dashboard();
             dashboard.setVisible(true);
-
-            // Close current Login frame
             this.dispose();
         } else {
-            // Show error message
             JOptionPane.showMessageDialog(this, "Invalid username or password.");
         }
     }
 
-    private void rememberMeAction() {
-        // TODO
+    // open signup frame
+    private void signUpAction() {
+        SignUpFrame signup = new SignUpFrame(userManager);
+        signup.setVisible(true);
+        this.setVisible(false);
     }
 
- 
-    // Layout Helpers
-    private void setupLeftPanelLayout() {
-        GroupLayout layout = new GroupLayout(leftPanel);
-        leftPanel.setLayout(layout);
+    // layout components
+    private void setupLayout() {
+        setTitle("Login");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(960, 540));
+        setLayout(new BorderLayout());
+
+        add(leftPanel, BorderLayout.WEST);
+        add(rightPanel, BorderLayout.CENTER);
+
+        JPanel innerForm = new JPanel();
+        innerForm.setOpaque(false);
+
+        JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        centerWrapper.setOpaque(false);
+        centerWrapper.add(innerForm);
+
+        rightPanel.add(centerWrapper, BorderLayout.CENTER);
+
+        GroupLayout layout = new GroupLayout(innerForm);
+        innerForm.setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        // horizontal layout
         layout.setHorizontalGroup(
-            layout.createParallelGroup(LEADING)
-                .addGap(0, 335, Short.MAX_VALUE)
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(titleLabel, GroupLayout.Alignment.CENTER)
+                .addComponent(usernameLabel)
+                .addComponent(usernameField, 300, 300, 300)
+                .addComponent(passwordLabel)
+                .addComponent(passwordField, 300, 300, 300)
+                .addComponent(loginButtonPanel, GroupLayout.Alignment.TRAILING)
+                .addComponent(signUpPanel, GroupLayout.Alignment.CENTER)
         );
+
+        // vertical layout
         layout.setVerticalGroup(
-            layout.createParallelGroup(LEADING)
-                .addGap(0, 0, Short.MAX_VALUE)
-        );
-    }
-
-    private void setupLayeredPaneLayout() {
-        GroupLayout layout = new GroupLayout(layeredPane);
-        layeredPane.setLayout(layout);
-
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(39, 39, 39)
-                    .addComponent(titleLabel, 258, 258, 258)
-                    .addGap(0, 0, Short.MAX_VALUE))
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(22, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(LEADING)
-                        .addComponent(usernameLabel)
-                        .addComponent(passwordLabel)
-                        .addComponent(usernameField, 300, 300, 300)
-                        .addGroup(layout.createParallelGroup(TRAILING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(rememberMeRadio)
-                                .addPreferredGap(RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(loginButton))
-                            .addComponent(passwordField, 300, 300, 300)))
-                    .addGap(18, 18, 18))
-        );
-
-        layout.setVerticalGroup(
-            layout.createParallelGroup(LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(66, 66, 66)
-                    .addComponent(titleLabel, 68, 68, 68)
-                    .addPreferredGap(RELATED)
-                    .addComponent(usernameLabel)
-                    .addPreferredGap(RELATED)
-                    .addComponent(usernameField, 37, 37, 37)
-                    .addPreferredGap(UNRELATED)
-                    .addComponent(passwordLabel)
-                    .addGap(8, 8, 8)
-                    .addComponent(passwordField, 37, 37, 37)
-                    .addGap(25, 25, 25)
-                    .addGroup(layout.createParallelGroup(BASELINE)
-                        .addComponent(rememberMeRadio)
-                        .addComponent(loginButton))
-                    .addContainerGap(102, Short.MAX_VALUE))
-        );
-    }
-
-    private void setupMainLayout() {
-        GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addComponent(leftPanel, GroupLayout.PREFERRED_SIZE, 
-                    		GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, 0)
-                    .addComponent(layeredPane, GroupLayout.PREFERRED_SIZE, 
-                    		GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addGap(2, 2, 2))
-        );
-
-        layout.setVerticalGroup(
-            layout.createParallelGroup(LEADING)
-                .addComponent(leftPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(layeredPane)
+            layout.createSequentialGroup()
+                .addGap(60)
+                .addComponent(titleLabel, 50, 50, 50)
+                .addGap(20)
+                .addComponent(usernameLabel)
+                .addComponent(usernameField, 30, 30, 30)
+                .addGap(10)
+                .addComponent(passwordLabel)
+                .addComponent(passwordField, 30, 30, 30)
+                .addGap(20)
+                .addComponent(loginButtonPanel, 30, 30, 30)
+                .addGap(15)
+                .addComponent(signUpPanel)
         );
 
         pack();
+        setLocationRelativeTo(null);
     }
 
-    // Main Method
-    public static void main(String args[]) {
-   
-    	// Create and display
-        java.awt.EventQueue.invokeLater(() -> new LoginFrame().setVisible(true));
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new LoginFrame().setVisible(true));
     }
-
-    // Variables
-    private javax.swing.JButton loginButton;
-    private javax.swing.JLabel titleLabel;
-    private javax.swing.JLabel passwordLabel;
-    private javax.swing.JLabel usernameLabel;
-    private javax.swing.JLayeredPane layeredPane;
-    private javax.swing.JPanel leftPanel;
-    private javax.swing.JRadioButton rememberMeRadio;
-    private javax.swing.JTextField usernameField;
-    private javax.swing.JTextField passwordField;
 }

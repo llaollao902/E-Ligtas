@@ -1,202 +1,237 @@
 package model;
 
-import javax.swing.JOptionPane;
-import javax.swing.GroupLayout;
-import static javax.swing.GroupLayout.Alignment.*;
-import static javax.swing.LayoutStyle.ComponentPlacement.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class SignUpFrame extends javax.swing.JFrame {
+public class SignUpFrame extends JFrame {
+    //handles user storage, signup, and validation
+    private UserManager userManager;
 
-    public SignUpFrame() {
-        initComponents();
-        setupActions();
-        setupLeftPanelLayout();
-        setupFormLayout();
-        setupMainLayout();
+    //Main UI panels
+    private JPanel leftPanel;
+    private JPanel formPanel;
+
+    //UI components
+    private JLabel titleLabel;
+    private JLabel firstNameLabel, lastNameLabel, usernameLabel, passwordLabel;
+    private JTextField firstNameField, lastNameField, usernameField;
+    private JPasswordField passwordField;
+
+    // panels acting as buttons
+    private JPanel signUpButtonPanel;
+    private JLabel signUpLabel;
+
+    private JPanel backButtonPanel;
+    private JLabel backLabel;
+
+    public SignUpFrame(UserManager userManager) {
+        this.userManager = userManager; //receive shared userManager
+        initComponents(); //create components
+        setupActions(); //add listener
+        setupLayout(); //arrange components
     }
 
+    //initialize components
     private void initComponents() {
+        // labels
+        titleLabel = new JLabel("SIGN UP", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Century Gothic", Font.BOLD, 36));
 
-        // Panels
-        leftPanel = new javax.swing.JPanel();
-        formPane = new javax.swing.JLayeredPane();
+        //field labels
+        firstNameLabel = new JLabel("First Name");
+        lastNameLabel = new JLabel("Last Name");
+        usernameLabel = new JLabel("Username");
+        passwordLabel = new JLabel("Password");
 
-        // Labels
-        titleLabel = new javax.swing.JLabel();
-        firstNameLabel = new javax.swing.JLabel();
-        lastNameLabel = new javax.swing.JLabel();
-        usernameLabel = new javax.swing.JLabel();
-        passwordLabel = new javax.swing.JLabel();
+        // input fields
+        firstNameField = new JTextField();
+        lastNameField = new JTextField();
+        usernameField = new JTextField();
+        passwordField = new JPasswordField();
 
-        // Fields
-        firstName = new javax.swing.JTextField();
-        lastName = new javax.swing.JTextField();
-        username = new javax.swing.JTextField();
-        password = new javax.swing.JPasswordField();
+        // fonts
+        Font labelFont = new Font("Century Gothic", Font.PLAIN, 14);
+        Font fieldFont = new Font("Century Gothic", Font.PLAIN, 14);
+        Font buttonFont = new Font("Century Gothic", Font.PLAIN, 14);
 
-        // Button
-        signUpButton = new javax.swing.JButton();
+        //apply fonts
+        firstNameLabel.setFont(labelFont);
+        lastNameLabel.setFont(labelFont);
+        usernameLabel.setFont(labelFont);
+        passwordLabel.setFont(labelFont);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        firstNameField.setFont(fieldFont);
+        lastNameField.setFont(fieldFont);
+        usernameField.setFont(fieldFont);
+        passwordField.setFont(fieldFont);
 
-        // Left panel
-        leftPanel.setBackground(new java.awt.Color(37, 82, 103));
+        // Sign Up button as panel (centered)
+        signUpButtonPanel = new JPanel(new BorderLayout());
+        signUpButtonPanel.setBackground(new Color(240, 240, 240));
+        signUpButtonPanel.setPreferredSize(new Dimension(90, 30));
+        signUpButtonPanel.setMaximumSize(new Dimension(90, 30));
+        signUpLabel = new JLabel("Sign Up", SwingConstants.CENTER);
+        signUpLabel.setFont(buttonFont);
+        signUpButtonPanel.add(signUpLabel, BorderLayout.CENTER);
 
-        // Form pane
-        formPane.setBackground(new java.awt.Color(218, 230, 235));
-        formPane.setOpaque(true);
+        // Back to Login button (bottom-right)
+        backButtonPanel = new JPanel(new BorderLayout());
+        backButtonPanel.setOpaque(false);
+        backButtonPanel.setPreferredSize(new Dimension(100, 25));
+        backLabel = new JLabel("Back to Login", SwingConstants.CENTER);
+        backLabel.setFont(new Font("Century Gothic", Font.PLAIN, 12));
+        backLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        backButtonPanel.add(backLabel, BorderLayout.CENTER);
 
-        // Title
-        titleLabel.setFont(new java.awt.Font("Century Gothic", 1, 36));
-        titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        titleLabel.setText("SIGN UP");
+        // panels
+        leftPanel = new JPanel();
+        leftPanel.setBackground(new Color(37, 82, 103));
+        leftPanel.setPreferredSize(new Dimension(335, 540));
 
-        // Labels text
-        firstNameLabel.setText("First Name");
-        lastNameLabel.setText("Last Name");
-        usernameLabel.setText("Username");
-        passwordLabel.setText("Password");
+        formPanel = new JPanel(new BorderLayout());
+        formPanel.setBackground(new Color(218, 230, 235));
+        formPanel.setPreferredSize(new Dimension(625, 540));
 
-        // Button text
-        signUpButton.setText("Sign Up");
+        //frame settings
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Sign Up");
+        setPreferredSize(new Dimension(960, 540));
     }
 
-    // ---------------- Actions ----------------
+    //event listeners
     private void setupActions() {
-        signUpButton.addActionListener(e -> signUpAction());
+        // clicking panel triggers signup
+        signUpButtonPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                signUpAction();
+            }
+        });
 
-        firstName.addActionListener(e -> signUpAction());
-        lastName.addActionListener(e -> signUpAction());
-        username.addActionListener(e -> signUpAction());
-        password.addActionListener(e -> signUpAction());
+        // pressing enter triggers signup
+        firstNameField.addActionListener(e -> signUpAction());
+        lastNameField.addActionListener(e -> signUpAction());
+        usernameField.addActionListener(e -> signUpAction());
+        passwordField.addActionListener(e -> signUpAction());
+
+        // back to login
+        backButtonPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                backToLogin();
+            }
+        });
     }
 
+    //signup logic
     private void signUpAction() {
-        String first = firstName.getText().trim();
-        String last  = lastName.getText().trim();
-        String user  = username.getText().trim();
-        String pass  = new String(password.getPassword());
+        String first = firstNameField.getText().trim();
+        String last  = lastNameField.getText().trim();
+        String user  = usernameField.getText().trim();
+        String pass  = new String(passwordField.getPassword());
 
         if (first.isEmpty() || last.isEmpty() || user.isEmpty() || pass.isEmpty()) {
             JOptionPane.showMessageDialog(this, "All fields are required.");
             return;
         }
 
-        JOptionPane.showMessageDialog(this, "Sign up successful!");
+        if (userManager.usernameExists(user)) {
+            JOptionPane.showMessageDialog(this, "Username already exists!");
+            return;
+        }
+
+        userManager.signup(user, pass, first, last);
+        JOptionPane.showMessageDialog(this, "Account created successfully!");
+        backToLogin();
     }
 
-    // ---------------- Layout ----------------
-    private void setupLeftPanelLayout() {
-        GroupLayout layout = new GroupLayout(leftPanel);
-        leftPanel.setLayout(layout);
-
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(LEADING)
-                .addGap(0, 335, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(LEADING)
-                .addGap(0, 0, Short.MAX_VALUE)
-        );
+    private void backToLogin() {
+        LoginFrame login = new LoginFrame();
+        login.setVisible(true);
+        this.dispose();
     }
 
-    private void setupFormLayout() {
-        GroupLayout layout = new GroupLayout(formPane);
-        formPane.setLayout(layout);
+    //layout setup
+    private void setupLayout() {
+        setLayout(new BorderLayout());
+        add(leftPanel, BorderLayout.WEST);
+        add(formPanel, BorderLayout.CENTER);
 
+        JPanel innerForm = new JPanel();
+        innerForm.setOpaque(false);
+
+        JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        centerWrapper.setOpaque(false);
+        centerWrapper.add(innerForm);
+
+        formPanel.add(centerWrapper, BorderLayout.CENTER);
+
+        GroupLayout layout = new GroupLayout(innerForm);
+        innerForm.setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        // wrapper to center the sign up button
+        JPanel signUpWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        signUpWrapper.setOpaque(false);
+        signUpWrapper.add(signUpButtonPanel);
+
+        // wrapper to right-align back button
+        JPanel backWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        backWrapper.setOpaque(false);
+        backWrapper.add(backButtonPanel);
+
+        // Horizontal layout
         layout.setHorizontalGroup(
-            layout.createParallelGroup(LEADING)
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(titleLabel, GroupLayout.Alignment.CENTER)
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(39)
-                    .addComponent(titleLabel, 258, 258, 258))
-                .addGroup(TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(22, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(LEADING)
-                                .addComponent(firstNameLabel)
-                                .addComponent(firstName, 150, 150, 150))
-                            .addPreferredGap(RELATED)
-                            .addGroup(layout.createParallelGroup(LEADING)
-                                .addComponent(lastNameLabel)
-                                .addComponent(lastName, 150, 150, 150)))
-                        .addComponent(usernameLabel)
-                        .addComponent(username, 306, 306, 306)
-                        .addComponent(passwordLabel)
-                        .addComponent(password, 306, 306, 306)
-                        .addGroup(TRAILING, layout.createSequentialGroup()
-                            .addComponent(signUpButton)
-                            .addGap(129))))
-        );
-
-        layout.setVerticalGroup(
-            layout.createParallelGroup(LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(66)
-                    .addComponent(titleLabel, 68, 68, 68)
-                    .addPreferredGap(RELATED)
-                    .addGroup(layout.createParallelGroup(BASELINE)
+                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addComponent(firstNameLabel)
-                        .addComponent(lastNameLabel))
-                    .addPreferredGap(RELATED)
-                    .addGroup(layout.createParallelGroup(BASELINE)
-                        .addComponent(firstName, 37, 37, 37)
-                        .addComponent(lastName, 37, 37, 37))
-                    .addPreferredGap(UNRELATED)
-                    .addComponent(usernameLabel)
-                    .addGap(8)
-                    .addComponent(username, 37, 37, 37)
-                    .addPreferredGap(RELATED)
-                    .addComponent(passwordLabel)
-                    .addPreferredGap(RELATED)
-                    .addComponent(password, 37, 37, 37)
-                    .addGap(18)
-                    .addComponent(signUpButton)
-                    .addContainerGap(45, Short.MAX_VALUE))
-        );
-    }
-
-    private void setupMainLayout() {
-        GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addComponent(leftPanel, GroupLayout.PREFERRED_SIZE,
-                            GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(formPane))
+                        .addComponent(firstNameField, 150, 150, 150))
+                    .addGap(10)
+                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(lastNameLabel)
+                        .addComponent(lastNameField, 150, 150, 150)))
+                .addComponent(usernameLabel)
+                .addComponent(usernameField, 306, 306, 306)
+                .addComponent(passwordLabel)
+                .addComponent(passwordField, 306, 306, 306)
+                .addComponent(signUpWrapper)
+                .addComponent(backWrapper)
         );
 
+        // Vertical layout
         layout.setVerticalGroup(
-            layout.createParallelGroup(LEADING)
-                .addComponent(leftPanel, GroupLayout.DEFAULT_SIZE,
-                        GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(formPane)
+            layout.createSequentialGroup()
+                .addGap(60)
+                .addComponent(titleLabel, 50, 50, 50)
+                .addGap(20)
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(firstNameLabel)
+                    .addComponent(lastNameLabel))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(firstNameField, 30, 30, 30)
+                    .addComponent(lastNameField, 30, 30, 30))
+                .addGap(10)
+                .addComponent(usernameLabel)
+                .addComponent(usernameField, 30, 30, 30)
+                .addGap(10)
+                .addComponent(passwordLabel)
+                .addComponent(passwordField, 30, 30, 30)
+                .addGap(20)
+                .addComponent(signUpWrapper, 30, 30, 30)
+                .addGap(10)
+                .addComponent(backWrapper, 30, 30, 30)
         );
 
         pack();
+        setLocationRelativeTo(null);
     }
 
-    // ---------------- Main ----------------
     public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(() -> new SignUpFrame().setVisible(true));
+        SwingUtilities.invokeLater(() -> new SignUpFrame(new UserManager()).setVisible(true));
     }
-
-    // ---------------- Variables ----------------
-    private javax.swing.JPanel leftPanel;
-    private javax.swing.JLayeredPane formPane;
-
-    private javax.swing.JLabel titleLabel;
-    private javax.swing.JLabel firstNameLabel;
-    private javax.swing.JLabel lastNameLabel;
-    private javax.swing.JLabel usernameLabel;
-    private javax.swing.JLabel passwordLabel;
-
-    private javax.swing.JTextField firstName;
-    private javax.swing.JTextField lastName;
-    private javax.swing.JTextField username;
-    private javax.swing.JPasswordField password;
-
-    private javax.swing.JButton signUpButton;
 }

@@ -1,4 +1,4 @@
-package model;
+package src;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +10,7 @@ public class LoginFrame extends JFrame {
     // user management
     private UserManager userManager;
 
-    // swing components
+    // swing labels
     private JLabel loginLabel;
     private JLabel signUpLabelButton;
     private JLabel titleLabel;
@@ -18,10 +18,11 @@ public class LoginFrame extends JFrame {
     private JLabel usernameLabel;
     private JLabel signUpTextLabel;
 
+    // input fields
     private JTextField usernameField;
     private JPasswordField passwordField;
 
-    // panels for layout
+    // main panels
     private JPanel leftPanel;
     private JPanel rightPanel;
 
@@ -29,20 +30,19 @@ public class LoginFrame extends JFrame {
     private JPanel loginButtonPanel;
     private JPanel signUpButtonPanel;
 
-    // combined sign-up panel (label + button)
+    // combined sign-up text + button
     private JPanel signUpPanel;
 
     public LoginFrame() {
         userManager = new UserManager(); // initialize user manager
-        initComponents(); // initialize swing components
-        setupActions(); // set up mouse listeners
-        setupLayout(); // arrange components on the frame
+        initComponents();                // initialize swing components
+        setupActions();                  // mouse and keyboard actions
+        setupLayout();                   // arrange components
     }
 
-    // initialize components
     private void initComponents() {
 
-        // labels
+        // labels for right panel
         titleLabel = new JLabel("LOGIN", SwingConstants.CENTER);
         usernameLabel = new JLabel("Username");
         passwordLabel = new JLabel("Password");
@@ -50,14 +50,12 @@ public class LoginFrame extends JFrame {
         loginLabel = new JLabel("Login", SwingConstants.CENTER);
         signUpLabelButton = new JLabel("Sign Up");
 
-        // text fields
+        // input fields
         usernameField = new JTextField();
         passwordField = new JPasswordField();
 
         // fonts
         Font labelFont = new Font("Century Gothic", Font.PLAIN, 14);
-        Font buttonFont = new Font("Century Gothic", Font.PLAIN, 14);
-        Font smallButtonFont = new Font("Century Gothic", Font.PLAIN, 12);
         Font titleFont = new Font("Century Gothic", Font.BOLD, 36);
 
         // apply fonts
@@ -65,22 +63,20 @@ public class LoginFrame extends JFrame {
         usernameLabel.setFont(labelFont);
         passwordLabel.setFont(labelFont);
         signUpTextLabel.setFont(new Font("Century Gothic", Font.PLAIN, 12));
-        loginLabel.setFont(buttonFont);
-        signUpLabelButton.setFont(smallButtonFont);
+        loginLabel.setFont(labelFont);
+        signUpLabelButton.setFont(new Font("Century Gothic", Font.PLAIN, 12));
         usernameField.setFont(labelFont);
         passwordField.setFont(labelFont);
 
-        // login button as panel
+        // login button panel
         loginButtonPanel = new JPanel(new BorderLayout());
         loginButtonPanel.setBackground(new Color(240, 240, 240));
-        loginButtonPanel.setPreferredSize(new Dimension(90, 30));
-        loginButtonPanel.setMaximumSize(new Dimension(90, 30));
+        loginButtonPanel.setPreferredSize(new Dimension(60, 30));
         loginButtonPanel.add(loginLabel, BorderLayout.CENTER);
 
         // sign-up button panel
         signUpButtonPanel = new JPanel(new BorderLayout());
         signUpButtonPanel.setOpaque(false);
-        signUpButtonPanel.setPreferredSize(new Dimension(60, 20));
         signUpButtonPanel.add(signUpLabelButton, BorderLayout.CENTER);
         signUpButtonPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -90,20 +86,52 @@ public class LoginFrame extends JFrame {
         signUpPanel.add(signUpTextLabel);
         signUpPanel.add(signUpButtonPanel);
 
-        // panels
-        leftPanel = new JPanel();
-        leftPanel.setBackground(new Color(37, 82, 103));
+        // LEFT PANEL (background + logos + app title)
+        leftPanel = new LoginBackgroundPanel();
         leftPanel.setPreferredSize(new Dimension(335, 540));
+        leftPanel.setLayout(null); // absolute positioning
 
+        // E-LIGTAS app title
+        JLabel eLigtasLabel = new JLabel("E-LIGTAS", SwingConstants.CENTER);
+        eLigtasLabel.setFont(new Font("Century Gothic", Font.BOLD, 48));
+        eLigtasLabel.setForeground(Color.WHITE);
+        eLigtasLabel.setBounds(0, 20, 335, 60); // top, centered
+        leftPanel.add(eLigtasLabel);
+
+        // Load logos
+        ImageIcon dictIcon = new ImageIcon(getClass().getResource("icons/DICT_LOGO.png"));
+        ImageIcon miaIcon = new ImageIcon(getClass().getResource("icons/MIA_LGU_LOGO.png"));
+
+        // Target width for both logos
+        int logoWidth = 120;
+
+        // Scale DICT logo
+        Image dictImg = dictIcon.getImage();
+        int dictHeight = dictImg.getHeight(null) * logoWidth / dictImg.getWidth(null);
+        dictImg = dictImg.getScaledInstance(logoWidth, dictHeight, Image.SCALE_SMOOTH);
+        JLabel dictLogo = new JLabel(new ImageIcon(dictImg));
+        dictLogo.setBounds((335 - logoWidth) / 2, 100, logoWidth, dictHeight); // below E-LIGTAS
+
+        // Scale MIA LGU logo
+        Image miaImg = miaIcon.getImage();
+        int miaHeight = miaImg.getHeight(null) * logoWidth / miaImg.getWidth(null);
+        miaImg = miaImg.getScaledInstance(logoWidth, miaHeight, Image.SCALE_SMOOTH);
+        JLabel miaLogo = new JLabel(new ImageIcon(miaImg));
+        miaLogo.setBounds((335 - logoWidth) / 2, 100 + dictHeight + 20, logoWidth, miaHeight); // spacing
+
+        // add logos
+        leftPanel.add(dictLogo);
+        leftPanel.add(miaLogo);
+
+        // right panel (login form)
         rightPanel = new JPanel(new BorderLayout());
         rightPanel.setBackground(new Color(218, 230, 235));
         rightPanel.setPreferredSize(new Dimension(625, 540));
     }
 
-    // set up mouse actions
     private void setupActions() {
 
-        // login click
+        // mouse click on login button
         loginButtonPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -111,7 +139,7 @@ public class LoginFrame extends JFrame {
             }
         });
 
-        // signup click
+        // mouse click on sign-up button
         signUpButtonPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -119,84 +147,85 @@ public class LoginFrame extends JFrame {
             }
         });
 
-        // pressing enter triggers login
+        // pressing Enter triggers login
         usernameField.addActionListener(e -> loginAction());
         passwordField.addActionListener(e -> loginAction());
     }
 
-    // login
     private void loginAction() {
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword());
 
         if (userManager.login(username, password)) {
             JOptionPane.showMessageDialog(this, "Login successful!");
-            Dashboard dashboard = new Dashboard();
-            dashboard.setVisible(true);
-            this.dispose();
+            new Dashboard().setVisible(true);
+            dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Invalid username or password.");
         }
     }
 
-    // open signup frame
     private void signUpAction() {
-        SignUpFrame signup = new SignUpFrame(userManager);
-        signup.setVisible(true);
-        this.setVisible(false);
+        new SignUpFrame(userManager).setVisible(true);
+        setVisible(false);
     }
 
-    // layout components
     private void setupLayout() {
+
         setTitle("Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(960, 540));
         setLayout(new BorderLayout());
 
+        // main panels
         add(leftPanel, BorderLayout.WEST);
         add(rightPanel, BorderLayout.CENTER);
 
+        // wrapper panels for centering form
         JPanel innerForm = new JPanel();
         innerForm.setOpaque(false);
 
-        JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerWrapper.setOpaque(false);
         centerWrapper.add(innerForm);
 
         rightPanel.add(centerWrapper, BorderLayout.CENTER);
 
+        // group layout for form
         GroupLayout layout = new GroupLayout(innerForm);
         innerForm.setLayout(layout);
         layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
 
         // horizontal layout
         layout.setHorizontalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addComponent(titleLabel, GroupLayout.Alignment.CENTER)
-                .addComponent(usernameLabel)
-                .addComponent(usernameField, 300, 300, 300)
-                .addComponent(passwordLabel)
-                .addComponent(passwordField, 300, 300, 300)
-                .addComponent(loginButtonPanel, GroupLayout.Alignment.TRAILING)
-                .addComponent(signUpPanel, GroupLayout.Alignment.CENTER)
+                    .addComponent(titleLabel, GroupLayout.Alignment.CENTER)
+                    .addComponent(usernameLabel)
+                    .addComponent(usernameField, 300, 300, 300)
+                    .addComponent(passwordLabel)
+                    .addComponent(passwordField, 300, 300, 300)
+                    .addGroup(layout.createSequentialGroup()
+                            .addGap(210)
+                            .addComponent(loginButtonPanel, 90, 90, 90)
+                    )
+                    .addComponent(signUpPanel, GroupLayout.Alignment.CENTER)
         );
 
         // vertical layout
         layout.setVerticalGroup(
             layout.createSequentialGroup()
-                .addGap(60)
-                .addComponent(titleLabel, 50, 50, 50)
-                .addGap(20)
-                .addComponent(usernameLabel)
-                .addComponent(usernameField, 30, 30, 30)
-                .addGap(10)
-                .addComponent(passwordLabel)
-                .addComponent(passwordField, 30, 30, 30)
-                .addGap(20)
-                .addComponent(loginButtonPanel, 30, 30, 30)
-                .addGap(15)
-                .addComponent(signUpPanel)
+                    .addGap(60)
+                    .addComponent(titleLabel)
+                    .addGap(20)
+                    .addComponent(usernameLabel)
+                    .addComponent(usernameField, 30, 30, 30)
+                    .addGap(10)
+                    .addComponent(passwordLabel)
+                    .addComponent(passwordField, 30, 30, 30)
+                    .addGap(20)
+                    .addComponent(loginButtonPanel, 30, 30, 30)
+                    .addGap(15)
+                    .addComponent(signUpPanel)
         );
 
         pack();

@@ -1,4 +1,4 @@
-package model;
+package src;
 
 import javax.swing.*;
 import java.awt.*;
@@ -85,16 +85,49 @@ public class SignUpFrame extends JFrame {
         backLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         backButtonPanel.add(backLabel, BorderLayout.CENTER);
 
-        // panels
-        leftPanel = new JPanel();
-        leftPanel.setBackground(new Color(37, 82, 103));
+        // LEFT PANEL (background + logos + app title)
+        leftPanel = new LoginBackgroundPanel();
         leftPanel.setPreferredSize(new Dimension(335, 540));
+        leftPanel.setLayout(null); // absolute positioning
 
+        // E-LIGTAS app title
+        JLabel eLigtasLabel = new JLabel("E-LIGTAS", SwingConstants.CENTER);
+        eLigtasLabel.setFont(new Font("Century Gothic", Font.BOLD, 48));
+        eLigtasLabel.setForeground(Color.WHITE);
+        eLigtasLabel.setBounds(0, 20, 335, 60); // top, centered
+        leftPanel.add(eLigtasLabel);
+
+        // Load logos
+        ImageIcon dictIcon = new ImageIcon(getClass().getResource("icons/DICT_LOGO.png"));
+        ImageIcon miaIcon = new ImageIcon(getClass().getResource("icons/MIA_LGU_LOGO.png"));
+
+        // Target width for both logos
+        int logoWidth = 120;
+
+        // Scale DICT logo
+        Image dictImg = dictIcon.getImage();
+        int dictHeight = dictImg.getHeight(null) * logoWidth / dictImg.getWidth(null);
+        dictImg = dictImg.getScaledInstance(logoWidth, dictHeight, Image.SCALE_SMOOTH);
+        JLabel dictLogo = new JLabel(new ImageIcon(dictImg));
+        dictLogo.setBounds((335 - logoWidth) / 2, 100, logoWidth, dictHeight); // below E-LIGTAS
+
+        // Scale MIA LGU logo
+        Image miaImg = miaIcon.getImage();
+        int miaHeight = miaImg.getHeight(null) * logoWidth / miaImg.getWidth(null);
+        miaImg = miaImg.getScaledInstance(logoWidth, miaHeight, Image.SCALE_SMOOTH);
+        JLabel miaLogo = new JLabel(new ImageIcon(miaImg));
+        miaLogo.setBounds((335 - logoWidth) / 2, 100 + dictHeight + 20, logoWidth, miaHeight); // spacing
+
+        // add logos
+        leftPanel.add(dictLogo);
+        leftPanel.add(miaLogo);
+
+        // right panel (form)
         formPanel = new JPanel(new BorderLayout());
         formPanel.setBackground(new Color(218, 230, 235));
         formPanel.setPreferredSize(new Dimension(625, 540));
 
-        //frame settings
+        // frame settings
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Sign Up");
         setPreferredSize(new Dimension(960, 540));

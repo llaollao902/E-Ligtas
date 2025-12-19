@@ -57,6 +57,15 @@ public class PanelRound extends JPanel {
         repaint();
     }
 
+    public void setAllBorders(int all) {
+    	this.roundBottomRight = all;
+        this.roundTopRight = all;
+        this.roundBottomLeft = all;
+        this.roundTopLeft = all;
+        repaint();
+    }
+
+
     private int roundTopLeft = 0;
     private int roundTopRight = 0;
     private int roundBottomLeft = 0;
@@ -131,3 +140,4 @@ public class PanelRound extends JPanel {
     }
 
 }
+

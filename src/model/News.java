@@ -5,6 +5,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class News extends JFrame {
 
@@ -12,14 +14,20 @@ public class News extends JFrame {
     private static final Color BLUE = new Color(27, 90, 120);
     private static final Color SIDEBAR_COLOR = new Color(37, 82, 103);
     private static final Color CARD = Color.WHITE;
+    private static final Color ACTIVE_BG = new Color(218, 230, 235);
+    private static final Color ACTIVE_TEXT = new Color(37, 82, 103);
+    private static final Color HOVER_COLOR = new Color(25, 62, 79);
 
     // Sidebar panels
-    private JPanel sidebarPanel;
-    private JPanel dashboardItem;
-    private JPanel reportItem;
-    private JPanel hotlineItem;
-    private JPanel newsItem;
-    private JPanel logoutItem;
+    private PanelRound sidebarPanel;
+    private PanelRound dashboardItem;
+    private PanelRound reportItem;
+    private PanelRound hotlineItem;
+    private PanelRound newsItem;
+    private PanelRound logoutItem;
+    
+    // Track active panel
+    private PanelRound activePanel = null;
 
     public News() {
         initUI();
@@ -37,13 +45,13 @@ public class News extends JFrame {
         add(sidebarPanel, BorderLayout.WEST);
         
         // Main content
-        JPanel mainContent = main();
+        PanelRound mainContent = main();
         add(mainContent, BorderLayout.CENTER);
     }
 
     /* ================= SIDEBAR ================= */
-    private JPanel createSidebar() {
-        JPanel panel = new JPanel();
+    private PanelRound createSidebar() {
+        PanelRound panel = new PanelRound();
         panel.setBackground(SIDEBAR_COLOR);
         panel.setPreferredSize(new Dimension(180, 540));
 
@@ -67,18 +75,19 @@ public class News extends JFrame {
                 "/icons/icons8-news-16.png",
                 "News"
         );
-        
-        // Set current item as active
-        newsItem.setBackground(new Color(0, 102, 102));
 
         logoutItem = createMenuItem(
                 "/icons/icons8-logout-16.png",
                 "Log out"
         );
+        
+        // Set initial active panel (newsItem)
+        setActivePanel(newsItem);
 
         // Add mouse listeners for navigation
         dashboardItem.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
+                setActivePanel(dashboardItem);
                 Dashboard dashboard = new Dashboard();
                 dashboard.setVisible(true);
                 News.this.dispose();
@@ -87,6 +96,7 @@ public class News extends JFrame {
 
         reportItem.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
+                setActivePanel(reportItem);
                 //ReportIncident report = new ReportIncident();
                 //report.setVisible(true);
                 News.this.dispose();
@@ -95,16 +105,21 @@ public class News extends JFrame {
 
         hotlineItem.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
-                // Create or open Hotlines frame
-                // Hotlines hotlines = new Hotlines();
-                // hotlines.setVisible(true);
-                // News.this.dispose();
+                setActivePanel(hotlineItem);
                 JOptionPane.showMessageDialog(News.this, "Hotlines feature coming soon!");
+            }
+        });
+
+        newsItem.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                setActivePanel(newsItem);
+                // Already on News page, do nothing
             }
         });
 
         logoutItem.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
+                setActivePanel(logoutItem);
                 //LoginFrame login = new LoginFrame();
                 //login.setVisible(true);
                 News.this.dispose();
@@ -117,7 +132,7 @@ public class News extends JFrame {
         panel.add(dashboardItem);
         panel.add(reportItem);
         panel.add(hotlineItem);
-        panel.add(newsItem);
+        panel.add(newsItem); 
         panel.add(Box.createVerticalGlue());
         panel.add(logoutItem);
         panel.add(Box.createVerticalStrut(20));
@@ -126,9 +141,11 @@ public class News extends JFrame {
     }
 
     // MENU ITEM (same as in Dashboard)
-    private JPanel createMenuItem(String iconPath, String text) {
-        JPanel item = new JPanel();
+    private PanelRound createMenuItem(String iconPath, String text) {
+        PanelRound item = new PanelRound();
         item.setBackground(SIDEBAR_COLOR);
+        item.setRoundBottomLeft(50);
+        item.setRoundTopLeft(50);
         item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         item.setLayout(new FlowLayout(FlowLayout.LEFT, 25, 10));
 
@@ -143,6 +160,9 @@ public class News extends JFrame {
         JLabel textLabel = new JLabel(text);
         textLabel.setFont(new Font("Century Gothic", Font.BOLD, 14));
         textLabel.setForeground(Color.WHITE);
+        
+        // Store the text label reference
+        item.putClientProperty("textLabel", textLabel);
 
         item.add(iconLabel);
         item.add(textLabel);
@@ -150,13 +170,13 @@ public class News extends JFrame {
         // Add hover effect
         item.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {
-                if (item != newsItem) { // Don't change color for active item
-                    item.setBackground(new Color(0, 102, 102));
+                if (item != activePanel) { // Don't change color for active item
+                    item.setBackground(HOVER_COLOR);
                 }
             }
 
             public void mouseExited(MouseEvent evt) {
-                if (item != newsItem) { // Keep active item highlighted
+                if (item != activePanel) { // Keep active item highlighted
                     item.setBackground(SIDEBAR_COLOR);
                 }
             }
@@ -164,27 +184,51 @@ public class News extends JFrame {
 
         return item;
     }
+    
+    // Method to set active panel
+    private void setActivePanel(PanelRound newActivePanel) {
+        // Reset the previously active panel
+        if (activePanel != null) {
+            activePanel.setBackground(SIDEBAR_COLOR);
+            JLabel prevTextLabel = (JLabel) activePanel.getClientProperty("textLabel");
+            if (prevTextLabel != null) {
+                prevTextLabel.setForeground(Color.WHITE);
+            }
+        }
+        
+        // Set the new active panel
+        activePanel = newActivePanel;
+        activePanel.setBackground(ACTIVE_BG);
+        JLabel newTextLabel = (JLabel) activePanel.getClientProperty("textLabel");
+        if (newTextLabel != null) {
+            newTextLabel.setForeground(ACTIVE_TEXT);
+        }
+    }
 
     /* ================= MAIN ================= */
 
-    private JPanel main() {
-        JPanel m = new JPanel(new BorderLayout());
+    private PanelRound main() {
+        PanelRound m = new PanelRound();
+        m.setLayout(new BorderLayout());
         m.setBackground(BG);
+        m.setAllBorders(20);
 
         m.add(header(), BorderLayout.NORTH);
 
-        JPanel body = body();
+        PanelRound body = body();
         body.setBorder(new EmptyBorder(18, 18, 18, 18));
         m.add(body, BorderLayout.CENTER);
 
         return m;
     }
 
-    private JPanel header() {
-        JPanel h = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+    private PanelRound header() {
+        PanelRound h = new PanelRound();
+        h.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         h.setBackground(CARD);
         h.setPreferredSize(new Dimension(780, 50));
         h.setBorder(new EmptyBorder(8, 12, 8, 12));
+        h.setAllBorders(15);
 
         JLabel t1 = new JLabel("Main news and events ");
         t1.setFont(new Font("Century Gothic", Font.BOLD, 20));
@@ -202,9 +246,11 @@ public class News extends JFrame {
 
     /* ================= BODY ================= */
 
-    private JPanel body() {
-        JPanel grid = new JPanel(new GridBagLayout());
+    private PanelRound body() {
+        PanelRound grid = new PanelRound();
+        grid.setLayout(new GridBagLayout());
         grid.setBackground(BG);
+        grid.setAllBorders(20);
 
         GridBagConstraints g = new GridBagConstraints();
         g.insets = new Insets(6, 6, 6, 6);
@@ -230,13 +276,13 @@ public class News extends JFrame {
 
     /* ================= CARDS ================= */
 
-    private JPanel featured() {
-        JPanel c = card();
+    private PanelRound featured() {
+        PanelRound c = card();
         c.setLayout(new BorderLayout(10, 0));
 
-        c.add(imageIcon("src/resources/featured.jpg", 180, 120), BorderLayout.WEST);
+        c.add(imageIcon("src/model/lgu.png", 180, 125), BorderLayout.WEST);
 
-        JPanel txt = vbox();
+        PanelRound txt = vbox();
         txt.add(section("Featured News", 15));
         txt.add(Box.createVerticalStrut(4));
         txt.add(bold("LGU Conducts Pre-Disaster Risk Assessment Ahead of Typhoon Uwan"));
@@ -246,17 +292,17 @@ public class News extends JFrame {
         return c;
     }
 
-    private JPanel project() {
-        JPanel c = card();
+    private PanelRound project() {
+        PanelRound c = card();
         c.setLayout(new BorderLayout(6, 6));
 
-        JPanel top = vbox();
+        PanelRound top = vbox();
         top.add(section("Miagao Project Update", 15));
         top.add(Box.createVerticalStrut(4));
         top.add(textItalic("Concreting of Road, Orbe Extension, Miagao"));
 
         c.add(top, BorderLayout.NORTH);
-        c.add(imageIcon("src/model/lgu.jpg", 230, 110), BorderLayout.CENTER);
+        c.add(imageIcon("src/model/project.png", 220, 130), BorderLayout.CENTER);
 
         return c;
     }
@@ -264,6 +310,7 @@ public class News extends JFrame {
     private JPanel infoRow() {
         JPanel r = new JPanel(new GridLayout(1, 3, 6, 0));
         r.setBackground(BG);
+        r.setOpaque(false);
 
         r.add(today());
         r.add(weather());
@@ -272,17 +319,25 @@ public class News extends JFrame {
         return r;
     }
 
-    private JPanel today() {
-        JPanel c = card();
+    private PanelRound today() {
+        PanelRound c = card();
         c.setLayout(new BorderLayout());
 
-        c.add(section("             Today", 14), BorderLayout.NORTH);
+        c.add(section("     Date Today", 14), BorderLayout.NORTH);
+        
+        LocalDate date = LocalDate.now();
+        
+        DateTimeFormatter formatMonthYear = DateTimeFormatter.ofPattern("MMM yyyy");
+        DateTimeFormatter formatDay = DateTimeFormatter.ofPattern("d");
+        
+        String monthYear = date.format(formatMonthYear).toUpperCase();
+        String day = date.format(formatDay).toUpperCase();
 
-        JLabel d = new JLabel("18", SwingConstants.CENTER);
+        JLabel d = new JLabel(day, SwingConstants.CENTER);
         d.setFont(new Font("Century Gothic", Font.BOLD, 30));
         d.setForeground(new Color(204, 153, 0));
 
-        JLabel m = new JLabel("Dec 2025", SwingConstants.CENTER);
+        JLabel m = new JLabel(monthYear, SwingConstants.CENTER);
         m.setFont(new Font("Century Gothic", Font.PLAIN, 12));
 
         c.add(d, BorderLayout.CENTER);
@@ -291,17 +346,17 @@ public class News extends JFrame {
         return c;
     }
 
-    private JPanel weather() {
-        JPanel c = card();
+    private PanelRound weather() {
+        PanelRound c = card();
         c.setLayout(new BorderLayout());
 
-        c.add(section("Weather Forecast", 14), BorderLayout.NORTH);
+        c.add(section("          Alert", 14), BorderLayout.NORTH);
 
-        JLabel t = new JLabel("23°", SwingConstants.CENTER);
-        t.setFont(new Font("Century Gothic", Font.BOLD, 30));
-        t.setForeground(new Color(0, 102, 153));
+        JLabel t = new JLabel("Safe", SwingConstants.CENTER);
+        t.setFont(new Font("Century Gothic", Font.BOLD, 25));
+        t.setForeground(Color.GREEN);
 
-        JLabel w = new JLabel("Cloudy", SwingConstants.CENTER);
+        JLabel w = new JLabel("Normal", SwingConstants.CENTER);
         w.setFont(new Font("Century Gothic", Font.PLAIN, 13));
 
         c.add(t, BorderLayout.CENTER);
@@ -310,18 +365,18 @@ public class News extends JFrame {
         return c;
     }
 
-    private JPanel advisory() {
-        JPanel c = card();
+    private PanelRound advisory() {
+        PanelRound c = card();
         c.setLayout(new BorderLayout());
 
-        c.add(section("Advisory", 14), BorderLayout.NORTH);
-        c.add(text("No Advisory Today"), BorderLayout.CENTER);
+        c.add(section("Announements", 14), BorderLayout.NORTH);
+        c.add(text("No Announcements Today"), BorderLayout.CENTER);
 
         return c;
     }
 
-    private JPanel recent() {
-        JPanel c = card();
+    private PanelRound recent() {
+        PanelRound c = card();
         c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
 
         c.add(section("Recent News Today", 15));
@@ -336,36 +391,38 @@ public class News extends JFrame {
         return c;
     }
 
-    private JPanel clearing() {
-        JPanel c = card();
+    private PanelRound clearing() {
+        PanelRound c = card();
         c.setLayout(new BorderLayout(10, 0));
 
-        JPanel txt = vbox();
+        PanelRound txt = vbox();
         txt.add(section("<html> CLEARING OPERATIONS IN VARIOUS AREAS OF THE TOWN <html>", 14));
-        txt.add(text("The Municipal Engineer’s Office is currently spearheading the clearing operations across multiple "
-        		+ "areas of the municipality, addressing landslides, fallen trees, and accumulated debris caused by Typhoon "
-        		+ "Tino. Meanwhile, the General Services Office is leading efforts to restore cleanliness and order "
-        		+ "throughout the town."));
+        txt.add(text("The Municipal Engineer's Office is currently spearheading the clearing operations across multiple "
+                + "areas of the municipality, addressing landslides, fallen trees, and accumulated debris caused by Typhoon "
+                + "Tino. Meanwhile, the General Services Office is leading efforts to restore cleanliness and order "
+                + "throughout the town."));
 
         c.add(txt, BorderLayout.CENTER);
-        c.add(imageIcon("src/resources/clearing.jpg", 180, 110), BorderLayout.EAST);
+        c.add(imageIcon("src/model/clear.jpg", 180, 160), BorderLayout.EAST);
 
         return c;
     }
 
     /* ================= HELPERS ================= */
 
-    private JPanel card() {
-        JPanel p = new JPanel();
+    private PanelRound card() {
+        PanelRound p = new PanelRound();
         p.setBackground(CARD);
         p.setBorder(new EmptyBorder(10, 10, 10, 10));
+        p.setAllBorders(15);
         return p;
     }
 
-    private JPanel vbox() {
-        JPanel p = new JPanel();
+    private PanelRound vbox() {
+        PanelRound p = new PanelRound();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setBackground(CARD);
+        p.setAllBorders(10);
         return p;
     }
 
@@ -384,7 +441,7 @@ public class News extends JFrame {
 
     private JLabel text(String s) {
         JLabel l = new JLabel("<html>" + s + "</html>");
-        l.setFont(new Font("Century Gothic", Font.PLAIN, 11));
+        l.setFont(new Font("Century Gothic", Font.PLAIN, 10));
         return l;
     }
 

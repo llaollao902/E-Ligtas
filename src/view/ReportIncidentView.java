@@ -27,7 +27,6 @@ public class ReportIncidentView extends BaseFrameWithSidebar {
         super();
     }
 
-    // Lazy Initialization to prevent NullPointerException
     private ReportIncidentController getController() {
         if (this.controller == null) {
             this.controller = new ReportIncidentController();
@@ -49,11 +48,9 @@ public class ReportIncidentView extends BaseFrameWithSidebar {
     protected JComponent createMainContent() {
         JPanel mainPanel = new JPanel();
         mainPanel.setBackground(UIConstants.MAIN_BG);
-        // Negative border to pull content up, matching original file's trick
         mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0)); 
         
-        // --- Create Components ---
-        
+        //Create Components
         JLabel titleLabel = new JLabel("Report an Incident");
         titleLabel.setFont(new Font("Century Gothic", Font.BOLD, 24));
         titleLabel.setForeground(UIConstants.ACTIVE_TEXT);
@@ -64,13 +61,13 @@ public class ReportIncidentView extends BaseFrameWithSidebar {
         
         JPanel formPanel = createFormPanel();
         
-        // --- Main Layout ---
+        // Main Layout
         GroupLayout layout = new GroupLayout(mainPanel);
         mainPanel.setLayout(layout);
         
         layout.setHorizontalGroup(
             layout.createSequentialGroup()
-                .addGap(51) // Left margin
+                .addGap(51) 
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(titleLabel)
                     .addComponent(subtitleLabel)
@@ -80,7 +77,6 @@ public class ReportIncidentView extends BaseFrameWithSidebar {
         
         layout.setVerticalGroup(
             layout.createSequentialGroup()
-                // CHANGED: Reduced from 19 to 5 to move everything up
                 .addGap(5) 
                 .addComponent(titleLabel)
                 .addGap(2)
@@ -92,7 +88,8 @@ public class ReportIncidentView extends BaseFrameWithSidebar {
         
         return mainPanel;
     }
-    
+
+    // creates the form panel
     private JPanel createFormPanel() {
         JPanel formPanel = new JPanel();
         formPanel.setBackground(UIConstants.MAIN_BG);
@@ -143,7 +140,7 @@ public class ReportIncidentView extends BaseFrameWithSidebar {
         btn.setFocusPainted(false);
         btn.addActionListener(e -> handleSubmit());
 
-        // --- Form Layout ---
+        // Form Layout
         GroupLayout formLayout = new GroupLayout(formPanel);
         formPanel.setLayout(formLayout);
         
@@ -239,7 +236,8 @@ public class ReportIncidentView extends BaseFrameWithSidebar {
             }
         });
     }
-    
+
+    // handles the data using the controller
     private void handleSubmit() {
         ReportIncidentController ctrl = getController();
         

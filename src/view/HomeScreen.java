@@ -6,10 +6,8 @@ import util.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * the landing page of the application.
- * provides entry points for login and sign-up.
- */
+ // the landing page of the application.
+ // provides entry points for login and sign-up.
 @SuppressWarnings("serial")
 public class HomeScreen extends JFrame {
     private JPanel mainPanel;
@@ -79,9 +77,7 @@ public class HomeScreen extends JFrame {
         add(mainPanel);
     }
 
-    /**
-     * helper to create buttons with consistent brand styling.
-     */
+    // helper to create buttons with consistent brand styling.
     private JButton createStyledButton(String text, String iconPath) {
         JButton btn = new JButton(text, UIUtils.loadIcon(iconPath));
         btn.setFont(new Font(UIUtils.FONT_NAME, Font.BOLD, 18));
@@ -93,9 +89,8 @@ public class HomeScreen extends JFrame {
         return btn;
     }
 
-    /**
-     * helper to load and position logo images.
-     */
+    
+    // helper to load and position logo images.
     private JLabel createLogo(String path, int x, int y) {
         // use loadandscaleicon to ensure logos fit perfectly in 100x100
         JLabel logo = new JLabel(UIUtils.loadAndScaleIcon(path, 100, 100));
@@ -106,4 +101,5 @@ public class HomeScreen extends JFrame {
     // getters for navigation
     public JButton getLoginButton() { return loginButton; }
     public JButton getSignUpButton() { return signUpButton; }
+
 }

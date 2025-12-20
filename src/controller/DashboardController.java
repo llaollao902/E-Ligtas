@@ -8,35 +8,27 @@ import service.JsonIncidentRepository;
 
 import java.util.List;
 
-/**
- * Controller for Dashboard operations.
- * Follows MVC pattern - mediates between View and Model/Service layers.
- * Follows Single Responsibility Principle - handles dashboard logic only.
- * Follows Dependency Inversion Principle - depends on IIncidentRepository abstraction.
- */
+// controller for dashboard operations
 public class DashboardController {
     
     private final IncidentService incidentService;
     
-    // ==================== Constructor (Dependency Injection) ====================
-    
+    // constructor    
     public DashboardController() {
         IIncidentRepository repository = new JsonIncidentRepository();
         this.incidentService = new IncidentService(repository);
     }
     
     /**
-     * Constructor for testing with custom repository.
-     * @param repository Custom repository implementation
+     * constructor for testing with custom repository.
+     * @param repository custom repository implementation
      */
     public DashboardController(IIncidentRepository repository) {
         this.incidentService = new IncidentService(repository);
     }
-    
-    // ==================== Public Controller Methods ====================
-    
+        
     /**
-     * Load all incidents.
+     * load all incidents.
      * @return List of all incidents
      */
     public List<Incident> loadAllIncidents() {
@@ -44,7 +36,7 @@ public class DashboardController {
     }
     
     /**
-     * Get filtered incidents based on criteria.
+     * get filtered incidents based on type.
      * @param typeFilter Type filter
      * @param statusFilter Status filter
      * @param locationFilter Location filter
@@ -58,8 +50,8 @@ public class DashboardController {
     }
     
     /**
-     * Calculate statistics from a list of incidents.
-     * @param incidents List of incidents
+     * calculate statistics from a list of incidents.
+     * @param incidents list of incidents
      * @return IncidentStatistics object
      */
     public IncidentStatistics calculateStatistics(List<Incident> incidents) {
@@ -67,7 +59,7 @@ public class DashboardController {
     }
     
     /**
-     * Convert incidents to table rows.
+     * convert incidents to table rows.
      * @param incidents List of incidents
      * @return 2D array for table model
      */

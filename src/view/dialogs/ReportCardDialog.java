@@ -7,11 +7,7 @@ import util.UIConstants;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Dialog for displaying detailed incident report information.
- * Follows Single Responsibility Principle - only displays incident details.
- * Accepts Incident model object (MVC pattern).
- */
+// Dialog for displaying detailed incident report information
 public class ReportCardDialog extends JDialog {
 
     private final Incident incident;
@@ -23,16 +19,14 @@ public class ReportCardDialog extends JDialog {
     
     private int y = 10; // vertical cursor
     
-    // ==================== Constructor ====================
-    
+    // ==== Constructor ===
     public ReportCardDialog(JFrame parent, Incident incident) {
         super(parent, "Incident Report Details", true);
         this.incident = incident;
         initUI();
     }
     
-    // ==================== UI Initialization ====================
-    
+    // === UI Initialization ===
     private void initUI() {
         setSize(400, 600);
         setResizable(false);
@@ -57,8 +51,7 @@ public class ReportCardDialog extends JDialog {
         setLocationRelativeTo(getParent());
     }
     
-    // ==================== Header Section ====================
-    
+    // === Header Section ===
     private void addHeader(JPanel p) {
         ImageIcon icon = IconLoader.loadIcon(UIConstants.getIncidentIcon(incident.getType()));
         if (icon != null) {
@@ -78,7 +71,8 @@ public class ReportCardDialog extends JDialog {
         
         y += 22;
     }
-    
+
+    // adds the status
     private void addStatus(JPanel p) {
         JLabel statusLabel = label("Status", 14, Font.BOLD);
         statusLabel.setForeground(Color.GRAY);
@@ -97,7 +91,8 @@ public class ReportCardDialog extends JDialog {
         p.add(badge);
         y += 30;
     }
-    
+
+    // adds the location 
     private void addLocation(JPanel p) {
         addIcon("/icons/icons8-location-20.png", LEFT, y, p);
         
@@ -113,7 +108,8 @@ public class ReportCardDialog extends JDialog {
         
         y += 26;
     }
-    
+
+    // adds the description
     private void addDescription(JPanel p) {
         JLabel label = sectionLabel("Description");
         label.setBounds(LEFT, y, 150, 20);
@@ -136,7 +132,8 @@ public class ReportCardDialog extends JDialog {
         p.add(scroll);
         y += 200;
     }
-    
+
+    // adds the reported contact
     private void addReporterContact(JPanel p) {
         addIcon("/icons/icons8-person-20.png", LEFT, y, p);
         
@@ -162,7 +159,8 @@ public class ReportCardDialog extends JDialog {
         
         y += 28;
     }
-    
+
+    // adds the timeline
     private void addTimeline(JPanel p) {
         addIcon("/icons/icons8-clock-20.png", LEFT, y, p);
         
@@ -180,7 +178,8 @@ public class ReportCardDialog extends JDialog {
         
         y += 40;
     }
-    
+
+    // adds the close button
     private void addCloseButton(JPanel p) {
         JButton close = new JButton("Close");
         close.setBounds(290, 515, 75, 25);
@@ -188,7 +187,8 @@ public class ReportCardDialog extends JDialog {
         close.addActionListener(e -> dispose());
         p.add(close);
     }
-    
+
+    // puts a separator
     private void addSeparator(JPanel p) {
         y += LINE_GAP;
         JSeparator sep = new JSeparator();
@@ -197,7 +197,7 @@ public class ReportCardDialog extends JDialog {
         y += LINE_GAP + 4;
     }
     
-    // ==================== Helper Methods ====================
+    // === Helper Methods for formatting ===
     
     private JLabel label(String text, int size, int style) {
         JLabel l = new JLabel(text);

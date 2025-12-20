@@ -8,20 +8,14 @@ import util.IValidator;
 import util.NameValidator;
 import util.PhoneNumberValidator;
 
-/**
- * Controller for Report Incident operations.
- * Follows MVC pattern - handles report submission logic.
- * Follows Single Responsibility Principle.
- * Follows Dependency Inversion Principle.
- */
+// controller for the report incident operations
 public class ReportIncidentController {
     
     private final IncidentService incidentService;
     private final IValidator nameValidator;
     private final IValidator phoneValidator;
     
-    // ==================== Constructor ====================
-    
+    // constructor    
     public ReportIncidentController() {
         IIncidentRepository repository = new JsonIncidentRepository();
         this.incidentService = new IncidentService(repository);
@@ -30,7 +24,7 @@ public class ReportIncidentController {
     }
     
     /**
-     * Constructor for testing with custom dependencies.
+     * constructor for testing with custom dependencies.
      * @param repository Custom repository
      * @param nameValidator Custom name validator
      * @param phoneValidator Custom phone validator
@@ -43,10 +37,9 @@ public class ReportIncidentController {
         this.phoneValidator = phoneValidator;
     }
     
-    // ==================== Public Controller Methods ====================
     
     /**
-     * Submit a new incident report.
+     * submit a new incident report.
      * @param incidentType Type of incident
      * @param location Location of incident
      * @param description Description
@@ -94,12 +87,8 @@ public class ReportIncidentController {
             return new ValidationResult(false, "Failed to save report. Please try again.");
         }
     }
-    
-    // ==================== Inner Class for Validation Results ====================
-    
-    /**
-     * Encapsulates validation result with success status and message.
-     */
+        
+    // Encapsulates validation result with success status and messages
     public static class ValidationResult {
         private final boolean success;
         private final String message;

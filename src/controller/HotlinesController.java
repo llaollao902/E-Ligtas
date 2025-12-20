@@ -5,29 +5,24 @@ import service.HotlineService;
 
 import java.util.List;
 
-/**
- * Controller for Hotlines operations.
- * Follows MVC pattern and Single Responsibility Principle.
- */
+// controller for hotlines operation
 public class HotlinesController {
     
     private final HotlineService hotlineService;
     
-    // ==================== Constructor ====================
-    
+    // constructor    
     public HotlinesController() {
         this.hotlineService = new HotlineService();
     }
     
     /**
-     * Constructor for testing with custom service.
+     * constructor for testing with custom service.
      * @param hotlineService Custom hotline service
      */
     public HotlinesController(HotlineService hotlineService) {
         this.hotlineService = hotlineService;
     }
     
-    // ==================== Public Controller Methods ====================
     
     /**
      * Get all emergency hotline contacts.

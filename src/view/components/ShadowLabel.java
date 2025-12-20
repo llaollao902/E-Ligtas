@@ -3,10 +3,7 @@ package view.components;
 import java.awt.*;
 import javax.swing.JLabel;
 
-/**
- * Custom JLabel with a drop-shadow effect for high-visibility titles.
- * Located in view.components as a reusable UI element.
- */
+// Custom JLabel with a drop-shadow effect for high-visibility titles
 public class ShadowLabel extends JLabel {
 
     private Color shadowColor = new Color(0, 0, 0, 100);
@@ -19,7 +16,7 @@ public class ShadowLabel extends JLabel {
         setFont(new Font("Segoe UI", Font.BOLD, 48));
     }
 
-    // ================= SETTERS =================
+    // ==== SETTERS ====
 
     public void setShadowOffset(int x, int y) {
         this.xOffset = x;
@@ -32,7 +29,7 @@ public class ShadowLabel extends JLabel {
         repaint();
     }
 
-    // ================= PAINTING =================
+    // ==== PAINTING ====
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -63,4 +60,5 @@ public class ShadowLabel extends JLabel {
         int height = fm.getHeight() + Math.abs(yOffset);
         return new Dimension(width, height);
     }
+
 }

@@ -9,21 +9,16 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-/**
- * News View - Displays main news and events.
- * Follows MVC pattern - pure UI layer.
- * Extends BaseFrameWithSidebar for shared sidebar functionality (Inheritance).
- */
+// News View - Displays main news and events.
+// Extends BaseFrameWithSidebar for shared sidebar functionality
 public class NewsView extends BaseFrameWithSidebar {
     
-    // ==================== Constructor ====================
-    
+    // === Constructor ===
     public NewsView() {
         super();
     }
     
-    // ==================== Abstract Method Implementations ====================
-    
+    // === Abstract Method Implementations ===
     @Override
     protected String getFrameTitle() {
         return "News";
@@ -50,15 +45,13 @@ public class NewsView extends BaseFrameWithSidebar {
         return mainPanel;
     }
     
-    // ==================== Override Navigation ====================
     
     @Override
     protected void onNewsClick() {
-        // Already on this page
+        // already on this page
     }
     
-    // ==================== Header Creation ====================
-    
+    // creates the header of the news page    
     private PanelRound createHeader() {
         PanelRound header = new PanelRound();
         header.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -81,8 +74,7 @@ public class NewsView extends BaseFrameWithSidebar {
         return header;
     }
     
-    // ==================== Body Creation ====================
-    
+    // creates the body of the news, uses gridbag layout for better formatting    
     private PanelRound createBody() {
         PanelRound grid = new PanelRound();
         grid.setLayout(new GridBagLayout());
@@ -93,14 +85,14 @@ public class NewsView extends BaseFrameWithSidebar {
         gbc.insets = new Insets(6, 6, 6, 6);
         gbc.fill = GridBagConstraints.BOTH;
         
-        // Featured news (left, top)
+        // featured news
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.62;
         gbc.weighty = 0.5;
         grid.add(createFeaturedNews(), gbc);
         
-        // Project update (right, spans 2 rows)
+        // project update
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 0.38;
@@ -108,20 +100,20 @@ public class NewsView extends BaseFrameWithSidebar {
         gbc.gridheight = 2;
         grid.add(createProjectUpdate(), gbc);
         
-        // Info row (left, middle)
+        // info row
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.weighty = 0.3;
         gbc.gridheight = 1;
         grid.add(createInfoRow(), gbc);
         
-        // Recent news (right, bottom)
+        // recent news
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.weighty = 0.3;
         grid.add(createRecentNews(), gbc);
         
-        // Clearing operations (left, bottom)
+        // clearing operations
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.weighty = 0.2;
@@ -130,8 +122,7 @@ public class NewsView extends BaseFrameWithSidebar {
         return grid;
     }
     
-    // ==================== Card Creation Methods ====================
-    
+    // creates the featured news    
     private PanelRound createFeaturedNews() {
         PanelRound card = createCard();
         card.setLayout(new BorderLayout(10, 0));
@@ -149,7 +140,8 @@ public class NewsView extends BaseFrameWithSidebar {
         
         return card;
     }
-    
+
+    // creates the project update
     private PanelRound createProjectUpdate() {
         PanelRound card = createCard();
         card.setLayout(new BorderLayout(6, 6));
@@ -166,7 +158,8 @@ public class NewsView extends BaseFrameWithSidebar {
         
         return card;
     }
-    
+
+    // creates the info row - alert, today, and announcements
     private JPanel createInfoRow() {
         JPanel row = new JPanel(new GridLayout(1, 3, 6, 0));
         row.setBackground(UIConstants.MAIN_BG);
@@ -178,7 +171,8 @@ public class NewsView extends BaseFrameWithSidebar {
         
         return row;
     }
-    
+
+    // creates the today card, utilizes date formatters, and local datetime
     private PanelRound createTodayCard() {
         PanelRound card = createCard();
         card.setLayout(new BorderLayout());
@@ -204,7 +198,8 @@ public class NewsView extends BaseFrameWithSidebar {
         
         return card;
     }
-    
+
+    // creates the alert card, no functionality, just ui
     private PanelRound createAlertCard() {
         PanelRound card = createCard();
         card.setLayout(new BorderLayout());
@@ -223,7 +218,8 @@ public class NewsView extends BaseFrameWithSidebar {
         
         return card;
     }
-    
+
+    // creates the announcement cards, can be modifiable for future admin feature
     private PanelRound createAnnouncementsCard() {
         PanelRound card = createCard();
         card.setLayout(new BorderLayout());
@@ -233,7 +229,8 @@ public class NewsView extends BaseFrameWithSidebar {
         
         return card;
     }
-    
+
+    // creates the recent news
     private PanelRound createRecentNews() {
         PanelRound card = createCard();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
@@ -249,7 +246,8 @@ public class NewsView extends BaseFrameWithSidebar {
         
         return card;
     }
-    
+
+    // creates the clearing operations card
     private PanelRound createClearingOperations() {
         PanelRound card = createCard();
         card.setLayout(new BorderLayout(10, 0));
@@ -271,8 +269,7 @@ public class NewsView extends BaseFrameWithSidebar {
         return card;
     }
     
-    // ==================== Helper Methods ====================
-    
+    // helper methods mostly for ui layout purposes, and label formats
     private PanelRound createCard() {
         PanelRound panel = new PanelRound();
         panel.setBackground(Color.WHITE);
@@ -319,7 +316,7 @@ public class NewsView extends BaseFrameWithSidebar {
         label.setFont(new Font(UIConstants.FONT_FAMILY, Font.PLAIN, 11));
         return label;
     }
-    
+
     private JLabel createImageLabel(String path, int width, int height) {
         try {
             ImageIcon icon = new ImageIcon(path);
@@ -339,7 +336,7 @@ public class NewsView extends BaseFrameWithSidebar {
         }
     }
     
-    // ==================== Main Method ====================
+    // === Main Method ===
     
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new NewsView().setVisible(true));

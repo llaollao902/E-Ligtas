@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+// controller for sign up operations
 public class SignUpController {
     private SignUpFrame view;
     private UserManager model;
@@ -53,12 +54,13 @@ public class SignUpController {
         navigateToLogin();
     }
 
-    // HELPER METHOD to ensure Controller is always attached
+    // helper method to ensure Controller is always attached
     private void navigateToLogin() {
         view.dispose(); // Close current Sign Up window
         
-        LoginFrame loginFrame = new LoginFrame(); // Create the UI
-        new LoginController(loginFrame, model);   // ATTACH THE BRAIN (The Controller)
-        loginFrame.setVisible(true);              // Show the window
+        LoginFrame loginFrame = new LoginFrame(); // create the UI
+        new LoginController(loginFrame, model);   // attach the controller
+        loginFrame.setVisible(true);              // shows the window
     }
+
 }

@@ -9,11 +9,10 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.JPanel;
 
-/**
- * Custom JPanel with rounded corners.
- * Provides methods to set individual corner radius.
- * This is a reusable UI component following component reusability principle.
- */
+/*
+ * custom JPanel with rounded corners, extends jpanel
+ * provides methods to set individual corner radius
+*/
 public class PanelRound extends JPanel {
 
     private int roundTopLeft = 0;
@@ -25,7 +24,7 @@ public class PanelRound extends JPanel {
         setOpaque(false);
     }
 
-    // ==================== Getters and Setters ====================
+    // Getters and Setters method
     
     public int getRoundTopLeft() {
         return roundTopLeft;
@@ -71,7 +70,7 @@ public class PanelRound extends JPanel {
         repaint();
     }
 
-    // ==================== Rendering ====================
+    // rendering
     
     @Override
     protected void paintComponent(Graphics grphcs) {

@@ -13,25 +13,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-/**
- * Hotlines View - displays emergency hotlines with navigation sidebar.
- * Follows MVC pattern - pure UI layer, delegates business logic to controller.
- * Extends BaseFrameWithSidebar for shared sidebar functionality (Inheritance).
- */
+ // Hotlines View - displays emergency hotlines with navigation sidebar.
+ // Extends BaseFrameWithSidebar for shared sidebar functionality
 public class HotlinesView extends BaseFrameWithSidebar {
     
-    // 1. Remove 'final' so we can initialize it lazily
     private HotlinesController controller;
     
-    // ==================== Constructor ====================
+    // === Constructor ===
     
     public HotlinesView() {
         super();
-        // 2. We don't strictly need to initialize here anymore, 
-        // as the helper method below handles it.
     }
 
-    // 3. Add this helper method
+    // helper method
     private HotlinesController getController() {
         if (this.controller == null) {
             this.controller = new HotlinesController();
@@ -39,7 +33,7 @@ public class HotlinesView extends BaseFrameWithSidebar {
         return this.controller;
     }
     
-    // ==================== Abstract Method Implementations ====================
+    // ==== Abstract Method Implementations ====
     
     @Override
     protected String getFrameTitle() {
@@ -62,16 +56,13 @@ public class HotlinesView extends BaseFrameWithSidebar {
         
         return panel;
     }
-    
-    // ==================== Override Navigation (stay on page) ====================
-    
+        
     @Override
     protected void onHotlineClick() {
-        // Already on this page, do nothing
+        // already on this page
     }
     
-    // ==================== Header Creation ====================
-    
+    // creates the header of the hotline page
     private JPanel createHeader() {
         JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
         header.setBackground(Color.WHITE);
@@ -84,9 +75,9 @@ public class HotlinesView extends BaseFrameWithSidebar {
         
         return header;
     }
-    
+
+    // creates the header icon and checks if the icon exists
     private JLabel createHeaderIcon() {
-        // Wrapped in try-catch/null check just in case IconLoader issues exist
         try {
             JLabel iconLabel = IconLoader.createIconLabel(UIConstants.ICON_HELP, 32, 32);
             if (iconLabel.getIcon() == null) {
@@ -98,7 +89,8 @@ public class HotlinesView extends BaseFrameWithSidebar {
             return new JLabel("[?]");
         }
     }
-    
+
+    // creates the header test
     private JPanel createHeaderText() {
         JPanel textPanel = new JPanel();
         textPanel.setBackground(Color.WHITE);
@@ -117,8 +109,7 @@ public class HotlinesView extends BaseFrameWithSidebar {
         return textPanel;
     }
     
-    // ==================== Hotlines Grid Creation ====================
-    
+    // formats the grid of the hotlines    
     private JPanel createHotlinesGrid() {
         JPanel grid = new JPanel(new GridLayout(2, 3, 20, 20));
         grid.setBackground(UIConstants.MAIN_BG);
@@ -128,9 +119,9 @@ public class HotlinesView extends BaseFrameWithSidebar {
         
         return grid;
     }
-    
+
+    // adds the hotline cards to the UI layout
     private void addHotlineCards(JPanel grid) {
-        // 4. CHANGE HERE: Use getController() instead of accessing 'controller' directly
         List<HotlineContact> hotlines = getController().getAllHotlines();
         
         if (hotlines != null) {
@@ -139,7 +130,8 @@ public class HotlinesView extends BaseFrameWithSidebar {
             }
         }
     }
-    
+
+    // creates the specific hotline cards
     private JPanel createHotlineCard(HotlineContact hotline) {
         PanelRound card = new PanelRound();
         card.setBackground(Color.WHITE);
@@ -161,14 +153,16 @@ public class HotlinesView extends BaseFrameWithSidebar {
         
         return card;
     }
-    
+
+    // helper method to create the card label
     private JLabel createCardLabel(String text, int style, int size, Color color) {
         JLabel label = new JLabel(text);
         label.setFont(new Font(UIConstants.FONT_FAMILY, style, size));
         label.setForeground(color);
         return label;
     }
-    
+
+    // makes the hotlines clickable and opens to their corresponding url
     private void makeClickable(JLabel label, String url) {
         label.setCursor(new Cursor(Cursor.HAND_CURSOR));
         label.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -177,7 +171,8 @@ public class HotlinesView extends BaseFrameWithSidebar {
             }
         });
     }
-    
+
+    // helper method to open the link, includes exception
     private void openURL(String url) {
         try {
             Desktop.getDesktop().browse(new URI(url));
@@ -186,8 +181,7 @@ public class HotlinesView extends BaseFrameWithSidebar {
         }
     }
     
-    // ==================== Back Button ====================
-    
+    // creates the back to dashboard button     
     private JPanel createBackButton() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
         panel.setBackground(UIConstants.MAIN_BG);
@@ -203,8 +197,7 @@ public class HotlinesView extends BaseFrameWithSidebar {
         return panel;
     }
     
-    // ==================== Main Method ====================
-    
+    // === Main Method ===    
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {

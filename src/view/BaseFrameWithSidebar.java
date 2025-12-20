@@ -9,17 +9,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-/**
- * Abstract base class for frames with sidebar navigation.
- * Demonstrates:
- * - Abstraction (abstract methods for subclasses to implement)
- * - Inheritance (shared sidebar functionality)
- * - Encapsulation (protected members for subclass access)
- * - Template Method Pattern
- */
+// abstract class for the side bar navigation
 public abstract class BaseFrameWithSidebar extends JFrame {
     
-    // ==================== Protected Components (Inheritance) ====================
+    // components of the sidebar
     protected PanelRound sidebarPanel;
     protected PanelRound dashboardItem;
     protected PanelRound reportItem;
@@ -28,13 +21,13 @@ public abstract class BaseFrameWithSidebar extends JFrame {
     protected PanelRound logoutItem;
     protected PanelRound activePanel;
     
-    // ==================== Constructor ====================
+    // === Constructor ===
     public BaseFrameWithSidebar() {
         initializeFrame();
         buildUI();
     }
     
-    // ==================== Template Method (defines algorithm structure) ====================
+    // === method for the template ===
     private void buildUI() {
         sidebarPanel = createSidebar();
         JComponent mainContent = createMainContent();
@@ -46,28 +39,25 @@ public abstract class BaseFrameWithSidebar extends JFrame {
         setLocationRelativeTo(null);
     }
     
-    // ==================== Abstract Methods (Abstraction) ====================
+    // === Abstract Methods ===
     
     /**
-     * Subclasses must implement this to create their specific main content.
      * @return The main content component
      */
     protected abstract JComponent createMainContent();
     
     /**
-     * Subclasses must specify which menu item should be active.
      * @return The active menu item
      */
     protected abstract PanelRound getActiveMenuItem();
     
     /**
-     * Get the frame title.
      * @return Title for the frame
      */
     protected abstract String getFrameTitle();
     
-    // ==================== Concrete Methods (Shared Implementation) ====================
     
+    // initializes the frame
     private void initializeFrame() {
         setTitle(getFrameTitle());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -76,8 +66,6 @@ public abstract class BaseFrameWithSidebar extends JFrame {
     }
     
     /**
-     * Create the sidebar with navigation menu.
-     * This is shared logic for all subclasses.
      * @return Configured sidebar panel
      */
     protected PanelRound createSidebar() {
@@ -92,7 +80,8 @@ public abstract class BaseFrameWithSidebar extends JFrame {
         
         return sidebar;
     }
-    
+
+    // creates the items at the side bar
     private void initializeMenuItems() {
         dashboardItem = createMenuItem(UIConstants.ICON_DASHBOARD, "Dashboard");
         reportItem = createMenuItem(UIConstants.ICON_REPORT, "Report Incident");
@@ -103,10 +92,7 @@ public abstract class BaseFrameWithSidebar extends JFrame {
         setActivePanel(getActiveMenuItem());
     }
     
-    /**
-     * Setup navigation listeners for menu items.
-     * Subclasses can override specific navigation behaviors.
-     */
+    // set ups the listeners for navigation
     protected void setupMenuNavigation() {
         addNavigationListener(dashboardItem, this::onDashboardClick);
         addNavigationListener(reportItem, this::onReportClick);
@@ -115,6 +101,7 @@ public abstract class BaseFrameWithSidebar extends JFrame {
         addNavigationListener(logoutItem, this::onLogoutClick);
     }
     
+    // layouts the sidebar by adding into the frame
     private void layoutSidebar(PanelRound sidebar) {
         sidebar.add(Box.createVerticalStrut(100));
         sidebar.add(dashboardItem);
@@ -127,7 +114,6 @@ public abstract class BaseFrameWithSidebar extends JFrame {
     }
     
     /**
-     * Create a single menu item.
      * @param iconFileName Icon file name
      * @param text Menu text
      * @return Configured menu item panel
@@ -145,7 +131,9 @@ public abstract class BaseFrameWithSidebar extends JFrame {
         
         return item;
     }
+
     
+    // helper method that creates the layout of the menu item
     private PanelRound createMenuItemPanel() {
         PanelRound item = new PanelRound();
         item.setBackground(UIConstants.SIDEBAR_COLOR);
@@ -155,14 +143,17 @@ public abstract class BaseFrameWithSidebar extends JFrame {
         item.setLayout(new FlowLayout(FlowLayout.LEFT, 25, 10));
         return item;
     }
-    
+
+    // creates the layout of the text
     private JLabel createTextLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(UIConstants.FONT_MENU);
         label.setForeground(Color.WHITE);
         return label;
     }
+
     
+    // creates the hover effect at the sidebar
     private void addHoverEffect(PanelRound item) {
         item.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {
@@ -180,7 +171,7 @@ public abstract class BaseFrameWithSidebar extends JFrame {
     }
     
     /**
-     * Add navigation listener to a menu item.
+     * adds the navigation listener to a menu item
      * @param menuItem Menu panel
      * @param action Action to execute
      */
@@ -201,7 +192,8 @@ public abstract class BaseFrameWithSidebar extends JFrame {
         resetPreviousActivePanel();
         activateNewPanel(newActivePanel);
     }
-    
+
+    // resets the previous action panel
     private void resetPreviousActivePanel() {
         if (activePanel != null) {
             activePanel.setBackground(UIConstants.SIDEBAR_COLOR);
@@ -211,7 +203,8 @@ public abstract class BaseFrameWithSidebar extends JFrame {
             }
         }
     }
-    
+
+    // activates the new panel
     private void activateNewPanel(PanelRound newActivePanel) {
         activePanel = newActivePanel;
         activePanel.setBackground(UIConstants.ACTIVE_BG);
@@ -221,7 +214,7 @@ public abstract class BaseFrameWithSidebar extends JFrame {
         }
     }
     
-    // ==================== Navigation Methods (can be overridden) ====================
+    // === Navigation Methods ===
     
     protected void onDashboardClick() {
         navigateToFrame("view.DashboardView");
@@ -244,7 +237,7 @@ public abstract class BaseFrameWithSidebar extends JFrame {
     }
     
     /**
-     * Navigate to another frame by class name.
+     * navigates to another frame by class name
      * @param className Fully qualified class name
      */
     protected void navigateToFrame(String className) {
@@ -259,7 +252,7 @@ public abstract class BaseFrameWithSidebar extends JFrame {
     }
     
     /**
-     * Show error dialog.
+     * show error dialog.
      * @param title Dialog title
      * @param message Error message
      */

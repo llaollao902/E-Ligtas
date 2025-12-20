@@ -15,10 +15,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-/**
- * Dashboard View - Main dashboard displaying incident reports and statistics.
- * Extends BaseFrameWithSidebar for shared sidebar functionality (Inheritance).
- */
+
+// Dashboard View - Main dashboard displaying incident reports and statistics.
+// Extends BaseFrameWithSidebar for shared sidebar functionality (Inheritance).
 public class DashboardView extends BaseFrameWithSidebar {
     
     private final DashboardController controller;
@@ -41,7 +40,7 @@ public class DashboardView extends BaseFrameWithSidebar {
     private JTextField searchField;
     private List<Incident> allIncidents;
     
-    // ==================== Constructor ====================
+    // ==== Constructor ====
     
     public DashboardView() {
         super();
@@ -49,7 +48,7 @@ public class DashboardView extends BaseFrameWithSidebar {
         loadData();
     }
     
-    // ==================== Abstract Method Implementations ====================
+    // ==== Abstract Method Implementations ====
     
     @Override
     protected String getFrameTitle() {
@@ -60,7 +59,8 @@ public class DashboardView extends BaseFrameWithSidebar {
     protected PanelRound getActiveMenuItem() {
         return dashboardItem;
     }
-    
+
+    // creates the main scroll pane for all the content
     @Override
     protected JComponent createMainContent() {
         JScrollPane scrollPane = new JScrollPane();
@@ -79,30 +79,25 @@ public class DashboardView extends BaseFrameWithSidebar {
         return scrollPane;
     }
     
-    // ==================== Override Navigation ====================
     
     @Override
     protected void onDashboardClick() {
-        // Already on this page
+        // already on this page
     }
     
-    // ==================== Data Loading ====================
-    
+    // uses the controller to load the date
     private void loadData() {
         allIncidents = controller.loadAllIncidents();
         updateStatistics();
         applyFilters();
     }
     
-    /**
-     * Refresh dashboard data (called after new incident is added).
-     */
+    // refreshes the dashboard data
     public void refreshDashboard() {
         loadData();
     }
     
-    // ==================== Statistics Panel ====================
-    
+    // method that creates the ui layout of the stats panel    
     private JPanel createStatsPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -130,7 +125,8 @@ public class DashboardView extends BaseFrameWithSidebar {
         
         return panel;
     }
-    
+
+    // helper method that creates each stat card
     private JLabel createStatCard(String title, Color valueColor, JPanel parent) {
         PanelRound card = new PanelRound();
         card.setBackground(Color.WHITE);
@@ -153,8 +149,8 @@ public class DashboardView extends BaseFrameWithSidebar {
         return valueLabel;
     }
     
-    // ==================== Incident Types Panel ====================
     
+    // creates the panel for the incident types
     private JPanel createIncidentTypesPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -183,7 +179,8 @@ public class DashboardView extends BaseFrameWithSidebar {
         
         return panel;
     }
-    
+
+    // helper method that creates the format of the type cards
     private JLabel createTypeCard(String type, JPanel parent) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(new Color(255, 255, 255));
@@ -206,9 +203,8 @@ public class DashboardView extends BaseFrameWithSidebar {
         parent.add(card);
         return countLabel;
     }
-    
-    // ==================== Reports Panel ====================
-    
+
+    // creates the reports panel
     private JPanel createReportsPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -232,7 +228,8 @@ public class DashboardView extends BaseFrameWithSidebar {
         
         return panel;
     }
-    
+
+    // creates the header for the reports
     private JPanel createReportsHeader() {
         JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         header.setBackground(UIConstants.MAIN_BG);
@@ -251,13 +248,14 @@ public class DashboardView extends BaseFrameWithSidebar {
         
         return header;
     }
-    
+
+    // creates the filters panel, the dropdown boxes
     private JPanel createFiltersPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         panel.setBackground(UIConstants.MAIN_BG);
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         
-        // Search field
+        // search field
         searchField = new JTextField(15);
         searchField.setFont(UIConstants.FONT_REGULAR);
         searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
@@ -300,7 +298,8 @@ public class DashboardView extends BaseFrameWithSidebar {
         
         return panel;
     }
-    
+
+    // creates the table panel, includes jtable
     private JPanel createTablePanel() {
         PanelRound panel = new PanelRound();
         panel.setBackground(Color.WHITE);
@@ -332,7 +331,8 @@ public class DashboardView extends BaseFrameWithSidebar {
                 }
             }
         });
-        
+
+        // enables users to scroll through the table
         JScrollPane scrollPane = new JScrollPane(incidentsTable);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         
@@ -341,7 +341,7 @@ public class DashboardView extends BaseFrameWithSidebar {
         return panel;
     }
     
-    // ==================== Filter Logic ====================
+    // the logic for filter listeners, makes the fitlers functional
     
     private void addFilterListeners() {
         ActionListener listener = e -> applyFilters();
@@ -372,7 +372,8 @@ public class DashboardView extends BaseFrameWithSidebar {
         
         reportsCountLabel.setText("(" + filtered.size() + ")");
     }
-    
+
+    // uses the controller to update the statistics at the dashboard
     private void updateStatistics() {
         IncidentStatistics stats = controller.calculateStatistics(allIncidents);
         
@@ -387,7 +388,8 @@ public class DashboardView extends BaseFrameWithSidebar {
         crimeCountLabel.setText(String.valueOf(stats.getCrimeCount()));
         medicalCountLabel.setText(String.valueOf(stats.getMedicalCount()));
     }
-    
+
+    // opens the report card to view the certain report
     private void openReportCard(int viewRow) {
         int modelRow = incidentsTable.convertRowIndexToModel(viewRow);
         DefaultTableModel model = (DefaultTableModel) incidentsTable.getModel();
@@ -406,7 +408,7 @@ public class DashboardView extends BaseFrameWithSidebar {
         dialog.setVisible(true);
     }
     
-    // ==================== Main Method ====================
+    // ==== Main Method ====
     
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -414,4 +416,5 @@ public class DashboardView extends BaseFrameWithSidebar {
             dashboard.setVisible(true);
         });
     }
+
 }
